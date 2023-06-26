@@ -38,7 +38,6 @@ public class ClientHandler extends Thread{
         }
 
         boolean presente;
-        boolean ciao = false;
         writer.println("Connessione avvenuta"); //dice al client che si connesso
         System.out.println("Connessione avvenuta da parte del client");//scrive connessione avvenuta in riga di comando
 
@@ -55,9 +54,7 @@ public class ClientHandler extends Thread{
                     prenotazione=reader.readLine(); //legge la prenotazione
                     System.out.println("Client "+porta+": "+prenotazione);//stampa la risposta in riga di comando
                 }catch (IOException e){
-                    cSocket.isClosed();
-                    ciao=true;
-                    break;
+                    prenotazione="exit";
                 }
 
                 //viene fatto un controllo per la richiesta del client
@@ -68,9 +65,6 @@ public class ClientHandler extends Thread{
                     presente=false;
                 }
             }while(presente);
-            if(ciao){
-                break;
-            }
 
             switch (prenotazione) {
                 case "all" -> writer.println(SitoAlberghi.all());
