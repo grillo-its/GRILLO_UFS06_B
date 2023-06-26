@@ -10,10 +10,10 @@ Per connettersi utilizzare la porta :8080
 
 # Comandi:
 
-  -all
+  - all
   
-  -all_sorted
+  - all_sorted
   
-  -more_expensive_suite
+  - more_expensive_suite
   
-  -exit
+  - exit
