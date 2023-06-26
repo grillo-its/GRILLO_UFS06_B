@@ -33,18 +33,19 @@ public class ClientHandler extends Thread{
             //quello che legge quello che scrive il client
             writer=new PrintWriter(cSocket.getOutputStream(), true);//inzializza il print writer ovvero
             //quello che manda i messaggi al client
-        }catch(IOException e){
-            e.printStackTrace();
+        }catch(IOException e) {
+            cSocket.isClosed();
         }
 
         boolean presente;
-        writer.println("Connessione avvenuta\n"); //dice al client che si connesso
+        boolean ciao = false;
+        writer.println("Connessione avvenuta"); //dice al client che si connesso
         System.out.println("Connessione avvenuta da parte del client");//scrive connessione avvenuta in riga di comando
 
         do{
             do{
                 //invia le istruzioni al client
-                writer.println("Digita un comando tra: ");
+                writer.println("\nDigita un comando tra: ");
                 writer.println("all");
                 writer.println("all_sorted");
                 writer.println("more_expensive_suite");
@@ -52,11 +53,40 @@ public class ClientHandler extends Thread{
 
                 try{
                     prenotazione=reader.readLine(); //legge la prenotazione
-                    System.out.println("Client: "+prenotazione);//stampa la risposta in riga di comando
+                    System.out.println("Client "+porta+": "+prenotazione);//stampa la risposta in riga di comando
                 }catch (IOException e){
-                    throw new RuntimeException(e);
+                    cSocket.isClosed();
+                    ciao=true;
+                    break;
+                }
+
+                //viene fatto un controllo per la richiesta del client
+                if(!prenotazione.equals("all")&&!prenotazione.equals("all_sorted")&&!prenotazione.equals("more_expensive_suite")&&!prenotazione.equals("exit")){
+                    presente=true;
+                    writer.println("\n'"+prenotazione+"' non e un comando corretto\n");
+                }else{
+                    presente=false;
                 }
             }while(presente);
+            if(ciao){
+                break;
+            }
+
+            switch (prenotazione) {
+                case "all" -> writer.println(SitoAlberghi.all());
+                case "all_sorted" -> writer.println(SitoAlberghi.allSorted());
+                case "more_expensive_suite" -> writer.println(SitoAlberghi.moreExpensiveSuite());
+                case "exit" -> writer.println("Connessione chiusa");
+            }
+
         }while(!prenotazione.equals("exit"));
+
+        //si chiude la connessione
+        try{
+            cSocket.close();
+            System.out.println("connessione chiusa dal client - Indirizzo: "+indirizzo+" Porta: "+porta);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
